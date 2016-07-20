@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:lang="en">
+<info>
+<title>Reference</title>
+<date>2016-07-20</date>
+</info>
+<simpara>This is a reference manual for an example project.</simpara>
+<section xml:id="introduction">
+<title>Introduction</title>
+<simpara>This project does something.
+We just haven&#8217;t decided what that is yet.</simpara>
+</section>
+</article>

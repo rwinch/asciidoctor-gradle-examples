@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?asciidoc-toc?>
+<?asciidoc-numbered?>
+<article xmlns="http://docbook.org/ns/docbook" xmlns:xl="http://www.w3.org/1999/xlink" version="5.0" xml:lang="en">
+<info>
+<title>Example Manual</title>
+<date>2014-09-09</date>
+<author>
+<personname>
+<firstname>Doc</firstname>
+<surname>Writer</surname>
+</personname>
+<email>doc.writer@example.org</email>
+</author>
+<authorinitials>DW</authorinitials>
+<revhistory>
+<revision>
+<revnumber>1.0.0-SNAPSHOT</revnumber>
+<date>2014-09-09</date>
+<authorinitials>DW</authorinitials>
+</revision>
+</revhistory>
+</info>
+<simpara>This is a user manual for an example project.</simpara>
+<section xml:id="introduction">
+<title>Introduction</title>
+<simpara>This project does something.
+We just haven&#8217;t decided what that is yet.</simpara>
+</section>
+<section xml:id="source-code">
+<title>Source Code</title>
+<formalpara>
+<title>Java code from project</title>
+<para>
+<programlisting language="java" linenumbering="unnumbered">public boolean contains(String haystack, String needle) {
+    return haystack.contains(needle);
+}</programlisting>
+</para>
+</formalpara>
+<simpara>This page was built by the following command:</simpara>
+<literallayout class="monospaced">$ ./gradlew asciidoctor</literallayout>
+</section>
+<section xml:id="images">
+<title>Images</title>
+<informalfigure role="thumb">
+<mediaobject>
+<imageobject>
+<imagedata fileref="images/sunset.jpg" width="75%" scalefit="1"/>
+</imageobject>
+<textobject><phrase>sunset</phrase></textobject>
+</mediaobject>
+</informalfigure>
+</section>
+<section xml:id="attributes">
+<title>Attributes</title>
+<variablelist>
+<title>Built-in</title>
+<varlistentry>
+<term>asciidoctor-version</term>
+<listitem>
+<simpara>1.5.4</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>safe-mode-name</term>
+<listitem>
+<simpara>unsafe</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>docdir</term>
+<listitem>
+<simpara>/home/travis/build/rwinch/asciidoctor-gradle-examples/asciidoc-to-docbook-to-pdf-example/src/docs/asciidoc/manual</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>docfile</term>
+<listitem>
+<simpara>/home/travis/build/rwinch/asciidoctor-gradle-examples/asciidoc-to-docbook-to-pdf-example/src/docs/asciidoc/manual/manual.adoc</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>imagesdir</term>
+<listitem>
+<simpara>images</simpara>
+</listitem>
+</varlistentry>
+</variablelist>
+<variablelist>
+<title>Custom</title>
+<varlistentry>
+<term>project-version</term>
+<listitem>
+<simpara>1.0.0-SNAPSHOT</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>sourcedir</term>
+<listitem>
+<simpara>/home/travis/build/rwinch/asciidoctor-gradle-examples/asciidoc-to-docbook-to-pdf-example/src/main/java</simpara>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>endpoint-url</term>
+<listitem>
+<simpara><link xl:href="http://example.org">http://example.org</link></simpara>
+</listitem>
+</varlistentry>
+</variablelist>
+</section>
+<section xml:id="includes">
+<title>Includes</title>
+<example>
+<title>include::subdir/_b.adoc[]</title>
+<simpara>content from <emphasis>src/docs/asciidoc/manual/subdir/_b.adoc</emphasis>.</simpara>
+<example>
+<title>include::_c.adoc[]</title>
+<simpara>content from <emphasis>src/docs/asciidoc/manual/subdir/c.adoc</emphasis>.</simpara>
+</example>
+</example>
+<warning>
+<simpara>Includes can be tricky!</simpara>
+</warning>
+</section>
+<section xml:id="build-gradle">
+<title>build.gradle</title>
+<programlisting language="groovy" linenumbering="unnumbered">buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name 'jboss-nexus'
+            url "http://repository.jboss.org/nexus/content/groups/public/"
+        }
+    }
+    dependencies {
+        classpath "org.jboss.jdocbook:gradle-jdocbook:1.2.2"
+        classpath 'saxon:saxon:6.5.3'
+        classpath 'net.sf.xslthl:xslthl:2.0.1' // Used by http://docbook.sourceforge.net/release/xsl/current/highlighting/common.xsl
+    }
+}
+
+plugins {
+	id 'org.asciidoctor.convert' version '1.5.3'
+}
+
+apply plugin: 'java'
+apply plugin: 'org.asciidoctor.convert'
+apply plugin: "jdocbook"
+
+    buildDir = "build"
+
+
+version = '1.0.0-SNAPSHOT'
+
+asciidoctorj {
+    version = '1.5.4'
+}
+
+asciidoctor {
+	backends = ['docbook']
+	attributes	'build-gradle': file('build.gradle'),
+				'sourcedir': project.sourceSets.main.java.srcDirs[0],
+				'endpoint-url': 'http://example.org',
+				'source-highlighter' : 'coderay',
+				'imagesdir':'images',
+				'toc':'left',
+				'icons': 'font',
+				'setanchors':'true',
+				'idprefix':'',
+				'idseparator':'-',
+				'docinfo1':'true'
+    resources {
+        from (sourceDir) {
+        	include '**/images/**'
+        }
+    }
+}
+
+def adocBooks = [ "manual", "userguide", "reference" ]
+
+jdocbook {
+    masterLanguage = ''
+
+    format('pdf') {
+        finalName = "index.pdf"
+        stylesheet = "xsl/pdf.xsl"
+    }
+
+    // Use one per book, e.g. "manual"
+    // manual {
+    //     baseDirName = "$buildDir/asciidoc/docbook"
+    //     masterSourceDocumentName = 'example-manual.xml'
+    // }
+
+    // Or, use a list of books and generate automatically
+    adocBooks.each { name -&gt;
+        create (name) {
+            baseDirName = "$buildDir/asciidoc/docbook/${name}/"
+            masterSourceDocumentName = "${name}.xml"
+        }
+    }
+
+}
+
+
+// Add a closure to the stageStyles_&lt;book&gt; task, to copy the required XSL
+adocBooks.each { name -&gt;
+    tasks["stageStyles_$name"].doLast {
+        logger.lifecycle( "Staging PDF-specific style resources for $name")
+        copy {
+            into project.file( "$buildDir/docbook/stage/$name" )
+            from project.file( 'src/main/docbook' )
+            includeEmptyDirs = false
+        }
+    }
+}
+
+// buildDocs is the jdocbook "master target". It needs asciidoctor output.
+buildDocs.dependsOn asciidoctor
+
+defaultTasks 'buildDocs'</programlisting>
+</section>
+</article>
